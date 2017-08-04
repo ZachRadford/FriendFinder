@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Friend Finder</title>
+
+  <!-- Latest compiled and minified CSS & JS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+</head>
+<body>
+
+  <div class="container">
+    <div class="jumbotron">
+      <h1>Survey Questions all about you!</h1>
+      <h2>You narcissistic egomaniac.</h2>
+    </div>
+  </div>
+
+  <div class="container">
+  	<div class="row">
+  		<div class="form-group">
+  			<label for="nameReq">Name (Required)</label>
+  			<input type="text" class="form-control" id="nameReq">
+  		</div>
+
+  		<div class="form-group">
+  			<label for="email">Email Address</label>
+  			<input type="text" class="form-control" id="email">
+  		</div>
+
+  		<div class="form-group">
+  			<label for="picReq">URL to picture (Required)</label>
+  			<input type="text" class="form-control" id="picReq">
+  		</div>
+  	</div>
+  </div>
+
+  <div class="container" id="questionContainer">
+  	<div class="row" id="questionTemplate" style="display:none">
+  		<div class="col-xs-12">
+	  		<div class="form-group">
+	    		<label></label>
+			    <select>
+			      <option value="1">1 (Strongly Disagree)</option>
+			      <option value="2">2</option>
+			      <option value="3">3</option>
+			      <option value="4">4</option>
+			      <option value="5">5 (Strongly Agree)</option>
+			    </select>
+			</div>
+		</div>
+  	</div>
+  </div>
+
+  <div class="container">
+	   <div class="row">
+	     <div class="col-sm-offset-6">
+	       <button type="submit" class="btn btn-default" id="submitAnswer">Submit</button>
+	     </div>
+	   </div>
+  </div>
+
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel" >We found you a match!</h4>
+      </div>
+      <div class="modal-body" id="newBestFriend">
+		<img class="img-responsive" id="bffPic" src="">
+		<br>
+		<div id="bffName"></div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+	<script src="https://code.jquery.com/jquery.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
+	<script>
+
+	var questions = {
+		question1: "Your mind is always buzzing with unexplored ideas and plans.",
+		question2: "Generally speaking, you rely more on your experience than your imagination.",
+		question3: "You find it easy to stay relaxed and focused even when there is some pressure.",
+		question4: "You rarely do something just out of sheer curiosity.",
+		question5: "People can rarely upset you.",
+		question6: "It is often difficult for you to relate to other people’s feelings.",
+		question7: "In a discussion, truth should be more important than people’s sensitivities.",
+		question8: "You rarely get carried away by fantasies and ideas.",
+		question9: "You think that everyone’s views should be respected regardless of whether they are supported by facts or not.",
+		question10: "You feel more energetic after spending time with a group of people."
+	}
+
+
+	var template = $("#questionTemplate")
+
+	for (var name in questions){
+
+		var newQuestion = template.clone()
+
+		newQuestion.find("label").text(questions[name])
+
+		newQuestion.find("select").attr("name", name).addClass("survey-question")
+		newQuestion.show()
+		
+
+
+		$("#questionContainer").append(newQuestion)
+	}
+
+	$("#submitAnswer").on("click", function(event){
+		event.preventDefault();
+
+		var answers = $('.survey-question');
+		var userChoice = {}
+
+		answers.each(function(index){
+			userChoice[$(this).attr('name')] = $(this).val()
+		})
+
+		console.log(userChoice)
+
+		var toSend = {
+			name: $("#nameReq").val().trim(),
+			email: $("#email").val().trim(),
+			picture: $("#picReq").val().trim(),
+			answers: userChoice
+		}
+		
+		console.log(toSend)
+
+
+		$.ajax({
+		  type: 'POST',
+		  data: JSON.stringify(toSend),
+		  contentType: 'application/json',
+		  url: '/api/new'
+		})
+
+	// $.post("/api/new", JSON.stringify(toSend))
+      .done(function(data) {
+        console.log(data);
+        alert("Finding you friends...");
+        	console.log(data.name)
+        	$("#bffPic").attr('src', data.picture)
+        	$('#bffName').empty().text("Congratulations " + data.name + " is your new BFF!")
+        	$('#myModal').modal('show')
+      });
+
+	});
+
+
+
+	</script>
+
+
+
+
+</body>
+</html>
