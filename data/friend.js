@@ -23,7 +23,7 @@ app.listen(PORT, function() {
 
 
 
-var assholes = {
+var guessppl = {
 		'kickingass@gmail.com':{
             name: 'Duke Nukem',
             email: 'kickingass@gmail.com',
@@ -91,8 +91,8 @@ app.get("/survey", function(req, res) {
 
 
 app.get("/api/new", function(req, res){
-	res.json(assholes)
-	// console.log(assholes)
+	res.json(guessppl)
+	// console.log(guessppl)
 })
 
 
@@ -100,13 +100,13 @@ app.get("/api/new", function(req, res){
 app.post("/api/new", function(req, res) {
   var newUser = req.body;
 
-  assholes[newUser.email] = newUser;
+  guessppl[newUser.email] = newUser;
   
-  // console.log(assholes)
-  var bestFriend = compareUsers(assholes, newUser)
+  // console.log(guessppl)
+  var bestFriend = compareUsers(guessppl, newUser)
 
   //find bestfirend object
-  res.json(assholes[bestFriend])
+  res.json(guessppl[bestFriend])
 
 
 
@@ -114,9 +114,9 @@ app.post("/api/new", function(req, res) {
 
 
 
-function compareUsers(assholes, newUser){
+function compareUsers(guessppl, newUser){
 	var compMap = {}
-	Object.keys(assholes).forEach(function(email){
+	Object.keys(guessppl).forEach(function(email){
 		if (newUser.email === email){
 			return;
 		}
@@ -127,7 +127,7 @@ function compareUsers(assholes, newUser){
 		//This can be done with .reduce, explain this to me
 		var compArr = Object.keys(newUser.answers).map(function(questionName){
 			
-			var threeve = parseInt(newUser.answers[questionName]) - parseInt(assholes[email].answers[questionName])
+			var threeve = parseInt(newUser.answers[questionName]) - parseInt(guessppl[email].answers[questionName])
 
 			threeve = Math.abs(threeve)
 			
